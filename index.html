@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Front of the Crowd — Sziget '26</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --purple: #9B1F8E;
+    --yellow: #FFE600;
+    --blue: #3B5CE4;
+    --dark: #150826;
+    --card: #1e0b35;
+  }
+  body {
+    background: var(--dark);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 4rem;
+  }
+  header {
+    text-align: center;
+    padding: 2.5rem 1rem 1.5rem;
+    border-bottom: 1px solid rgba(155,31,142,0.3);
+  }
+  header h1 {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: clamp(2.2rem, 8vw, 3.8rem);
+    color: var(--yellow);
+    text-shadow: 4px 4px 0 var(--purple), -1px -1px 0 var(--purple), 1px -1px 0 var(--purple), -1px 1px 0 var(--purple);
+    line-height: 1.1;
+  }
+  header p {
+    color: #bbb;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+  }
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  .form-card {
+    background: linear-gradient(160deg, #1e0b35, #250d45);
+    border: 2px solid var(--purple);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 30px rgba(155,31,142,0.2);
+  }
+  .form-card h2 {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1.5rem;
+    color: var(--yellow);
+    margin-bottom: 1.2rem;
+    text-shadow: 2px 2px 0 var(--purple);
+  }
+  .name-input {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(155,31,142,0.5);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    outline: none;
+    margin-bottom: 1.2rem;
+    transition: border-color 0.2s;
+  }
+  .name-input::placeholder { color: #666; }
+  .name-input:focus { border-color: var(--yellow); }
+  .days-label {
+    font-size: 0.8rem;
+    font-weight: 900;
+    color: var(--yellow);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    opacity: 0.8;
+  }
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 1.3rem;
+  }
+  .day-check { display: none; }
+  .day-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 0.4rem;
+    border-radius: 10px;
+    border: 1.5px solid rgba(155,31,142,0.4);
+    background: rgba(255,255,255,0.04);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .day-pill .day-name {
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #aaa;
+    transition: color 0.15s;
+  }
+  .day-pill .day-date {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1.05rem;
+    color: #ccc;
+    transition: color 0.15s;
+    line-height: 1.2;
+  }
+  .day-pill .day-theme {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #555;
+    text-align: center;
+    margin-top: 2px;
+    transition: color 0.15s;
+    line-height: 1.3;
+  }
+  .day-check:checked + .day-pill {
+    border-color: var(--yellow);
+    background: rgba(255,230,0,0.12);
+  }
+  .day-check:checked + .day-pill .day-name,
+  .day-check:checked + .day-pill .day-date { color: var(--yellow); }
+  .day-check:checked + .day-pill .day-theme { color: rgba(255,230,0,0.55); }
+  .submit-btn {
+    width: 100%;
+    background: var(--purple);
+    border: 2px solid var(--yellow);
+    border-radius: 10px;
+    color: var(--yellow);
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .submit-btn:hover { background: var(--yellow); color: var(--purple); }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .error-msg {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 0.6rem;
+    display: none;
+  }
+  .grid-section h2 {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1.5rem;
+    color: var(--yellow);
+    text-shadow: 2px 2px 0 var(--purple);
+    margin-bottom: 1.2rem;
+  }
+  .crowd-grid {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 2px solid rgba(155,31,142,0.4);
+  }
+  table { width: 100%; border-collapse: collapse; min-width: 520px; }
+  thead th {
+    background: var(--purple);
+    padding: 0.6rem 0.4rem;
+    text-align: center;
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
+    color: var(--yellow);
+    border-bottom: 2px solid rgba(255,230,0,0.3);
+  }
+  thead th.name-col { text-align: left; padding-left: 1rem; min-width: 120px; }
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.1s; }
+  tbody tr:hover { background: rgba(255,255,255,0.03); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody td { padding: 0.6rem 0.4rem; text-align: center; font-size: 0.9rem; }
+  tbody td.name-cell {
+    text-align: left;
+    padding-left: 1rem;
+    font-weight: 800;
+    color: white;
+    font-size: 0.95rem;
+  }
+  tfoot td {
+    background: rgba(155,31,142,0.2);
+    text-align: center;
+    padding: 0.6rem 0.4rem;
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1rem;
+    color: var(--yellow);
+    border-top: 2px solid rgba(155,31,142,0.4);
+  }
+  tfoot td.name-col {
+    text-align: left;
+    padding-left: 1rem;
+    font-size: 0.72rem;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #aaa;
+  }
+  .count-badge {
+    display: inline-block;
+    background: var(--purple);
+    color: var(--yellow);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 0.9rem;
+  }
+  .empty-state { text-align: center; padding: 2rem; color: #555; font-weight: 700; }
+  .loading { text-align: center; padding: 2rem; color: #666; font-weight: 700; font-size: 0.9rem; }
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--purple);
+    color: var(--yellow);
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 1rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 999px;
+    border: 2px solid var(--yellow);
+    transition: transform 0.3s ease;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Front of the Crowd</h1>
+  <p>Sziget '26 &nbsp;&middot;&nbsp; Who's there &amp; when 🏝️</p>
+</header>
+
+<div class="container">
+  <div class="form-card">
+    <h2>Add yourself 🎉</h2>
+    <input class="name-input" id="nameInput" type="text" placeholder="Your name..." maxlength="40">
+    <div class="days-label">Which days are you there?</div>
+    <div class="days-grid" id="daysGrid"></div>
+    <button class="submit-btn" id="submitBtn" onclick="addPerson()">Add me to the crowd 🎉</button>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <div class="grid-section">
+    <h2>The Crowd 👇</h2>
+    <div class="crowd-grid">
+      <table>
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"><tr><td colspan="10" class="loading">Loading the crowd...</td></tr></tbody>
+        <tfoot id="tableFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TOKEN = 'patQGIGSW10STXkvx.29daaae455a26a18b5f3a3113f2903786f482774bf9590ea618323bd9d95fd1b';
+const BASE_ID = 'appKksiOqMp4WLe1y';
+const TABLE_ID = 'tblJCEyCiGFQ2WUaf';
+const API = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}`;
+
+const DAYS = [
+  { key: 'Sun 10 Aug', day: 'Sun', date: '10 Aug', theme: 'Arrival' },
+  { key: 'Tue 11 Aug', day: 'Tue', date: '11 Aug', theme: 'Midnight Sun' },
+  { key: 'Wed 12 Aug', day: 'Wed', date: '12 Aug', theme: 'Pocketful of Sunshine' },
+  { key: 'Thu 13 Aug', day: 'Thu', date: '13 Aug', theme: 'Szigetchella' },
+  { key: 'Fri 14 Aug', day: 'Fri', date: '14 Aug', theme: "It's Not a Phase" },
+  { key: 'Sat 15 Aug', day: 'Sat', date: '15 Aug', theme: 'Cosmic Love' },
+  { key: 'Sun 16 Aug', day: 'Sun', date: '16 Aug', theme: 'Departure' },
+];
+
+// Build checkboxes
+const grid = document.getElementById('daysGrid');
+DAYS.forEach((d, i) => {
+  const id = `day_${i}`;
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.className = 'day-check';
+  input.id = id;
+  input.value = i;
+  const label = document.createElement('label');
+  label.htmlFor = id;
+  label.className = 'day-pill';
+  label.innerHTML = `
+    <span class="day-name">${d.day}</span>
+    <span class="day-date">${d.date}</span>
+    <span class="day-theme">${d.theme}</span>
+  `;
+  grid.appendChild(input);
+  grid.appendChild(label);
+});
+
+// Build header
+function buildHeader() {
+  const head = document.getElementById('tableHead');
+  let html = '<tr><th class="name-col">Name</th>';
+  DAYS.forEach(d => {
+    html += `<th>${d.day}<br><span style="font-family:Nunito;font-size:0.65rem;font-weight:700;opacity:0.8">${d.date}</span></th>`;
+  });
+  html += '<th>Total</th></tr>';
+  head.innerHTML = html;
+}
+
+// Fetch all records from Airtable
+async function fetchPeople() {
+  const res = await fetch(`${API}?pageSize=100`, {
+    headers: { Authorization: `Bearer ${TOKEN}` }
+  });
+  const data = await res.json();
+  return data.records || [];
+}
+
+// Render table
+async function renderTable() {
+  const records = await fetchPeople();
+  const body = document.getElementById('tableBody');
+  const foot = document.getElementById('tableFoot');
+
+  if (records.length === 0) {
+    body.innerHTML = `<tr><td colspan="${DAYS.length + 2}" class="empty-state">No one added yet — be the first! 🏝️</td></tr>`;
+    foot.innerHTML = '';
+    return;
+  }
+
+  const counts = new Array(DAYS.length).fill(0);
+  let bodyHtml = '';
+
+  records.forEach(rec => {
+    const fields = rec.fields;
+    const name = fields['Name'] || '?';
+    bodyHtml += `<tr><td class="name-cell">${escHtml(name)}</td>`;
+    DAYS.forEach((d, di) => {
+      const here = !!fields[d.key];
+      if (here) counts[di]++;
+      bodyHtml += here
+        ? `<td>✅</td>`
+        : `<td><span style="color:#2a1a3a">·</span></td>`;
+    });
+    const total = DAYS.filter(d => !!fields[d.key]).length;
+    bodyHtml += `<td style="font-weight:900;color:var(--yellow)">${total}</td></tr>`;
+  });
+
+  body.innerHTML = bodyHtml;
+
+  let footHtml = `<tr><td class="name-col">People per day</td>`;
+  counts.forEach(c => {
+    footHtml += `<td><span class="count-badge">${c}</span></td>`;
+  });
+  footHtml += `<td style="color:#aaa;font-family:Nunito;font-size:0.8rem;font-weight:700">${records.length} total</td></tr>`;
+  foot.innerHTML = footHtml;
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function addPerson() {
+  const name = document.getElementById('nameInput').value.trim();
+  const checked = [...document.querySelectorAll('.day-check:checked')].map(c => parseInt(c.value));
+  const err = document.getElementById('errorMsg');
+  const btn = document.getElementById('submitBtn');
+
+  if (!name || checked.length === 0) {
+    err.textContent = 'Pick a name and at least one day!';
+    err.style.display = 'block';
+    return;
+  }
+  err.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Adding...';
+
+  // Check for duplicate
+  const existing = await fetchPeople();
+  if (existing.find(r => r.fields['Name']?.toLowerCase() === name.toLowerCase())) {
+    err.textContent = `${name} is already in the crowd!`;
+    err.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Add me to the crowd 🎉';
+    return;
+  }
+
+  // Build fields
+  const fields = { 'Name': name };
+  checked.forEach(i => { fields[DAYS[i].key] = true; });
+
+  const res = await fetch(API, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ fields })
+  });
+
+  if (res.ok) {
+    document.getElementById('nameInput').value = '';
+    document.querySelectorAll('.day-check').forEach(c => c.checked = false);
+    await renderTable();
+    showToast(`${name} added to the crowd! 🎉`);
+  } else {
+    const e = await res.json();
+    err.textContent = 'Something went wrong. Try again!';
+    err.style.display = 'block';
+    console.error(e);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Add me to the crowd 🎉';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+buildHeader();
+renderTable();
+</script>
+</body>
+</html>
